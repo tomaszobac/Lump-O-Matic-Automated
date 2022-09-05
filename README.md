@@ -11,4 +11,5 @@ When you activate the process it will harvest the lump, check the current lump t
 While the process is running you will not be able to interact with the game, so if you don't want it running for an extended duration then it is advised to add a cutoff selection.
 
 Steam Workshop: https://steamcommunity.com/sharedfiles/filedetails/?id=2858773996
+
 Git Hub: https://github.com/EnderOnryo/Lump-O-Matic
