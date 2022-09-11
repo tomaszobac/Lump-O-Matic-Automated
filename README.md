@@ -1,3 +1,5 @@
+WARNING: The Steam version of this mod causes the game to constantly reload causing the screen to alternate flashing colors. If you are sensitive to that be wary. The web version of this mod has no loading screen so this *should* be less of an issue.
+
 A mod that allows you to automate human viable lump scumming. 
 
 Button 1 selects what Lump type you want the next lump to be.
