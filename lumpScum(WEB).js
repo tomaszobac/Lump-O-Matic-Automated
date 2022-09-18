@@ -411,7 +411,7 @@ Game.registerMod("lumpScum", {//this string needs to match the ID provided in yo
         MOD.initialGameSave = 0;
         scumStarted = false;
         // Misc.
-        ortrollIcon = MOD.dir + '/ortroll.webp';
+        ortrollIcon = "https://raw.githubusercontent.com/EnderOnryo/Lump-O-Matic/main/lumpScum/ortroll.webp";
         save = 0;
 
         MOD.scumHoursRaw = 0;
