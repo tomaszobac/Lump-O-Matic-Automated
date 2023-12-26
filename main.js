@@ -51,17 +51,7 @@ Game.registerMod("lumpScum", {//this string needs to match the ID provided in yo
             if (MOD.iterationCutoff >= 69420) { MOD.iterationCutoff = 0; }
             else if (MOD.iterationCutoff === 10000) { MOD.iterationCutoff = 69420; }
             else if (MOD.iterationCutoff >= 1000) { MOD.iterationCutoff += 1000; }
-            /* else if (MOD.iterationCutoff === 1337) { MOD.iterationCutoff === 2000 }
-            else if (MOD.iterationCutoff === 1000) { MOD.iterationCutoff = 1337; } */
-
-            /* else if (MOD.iterationCutoff >= 500) { MOD.iterationCutoff += 100; }
-            else if (MOD.iterationCutoff === 420) { MOD.iterationCutoff = 500; }
-            else if (MOD.iterationCutoff === 400) { MOD.iterationCutoff = 420; } */
             else if (MOD.iterationCutoff >= 100) { MOD.iterationCutoff += 100; }
-
-            /* else if (MOD.iterationCutoff >= 70) { MOD.iterationCutoff += 10; }
-            else if (MOD.iterationCutoff === 69) { MOD.iterationCutoff = 70; }
-            else if (MOD.iterationCutoff === 60) { MOD.iterationCutoff = 69; } */
             else if (MOD.iterationCutoff >= 10) { MOD.iterationCutoff += 10; }
             else { MOD.iterationCutoff += 1; }
             MOD.updateButtons();
@@ -81,6 +71,18 @@ Game.registerMod("lumpScum", {//this string needs to match the ID provided in yo
             MOD.initialLumpCount = Game.lumps;
             MOD.updateButtons();
             MOD.scumLump();
+        });
+
+        l('storeTitle').insertAdjacentHTML('beforeend', '<a style="font-size:14px;position:reletive;bottom:2px;right:2px;display:block;" class="smallFancyButton" id="autoScum"></a>');
+        AddEvent(l('autoScum'), 'click', function () {
+            MOD.autoScumActive = !MOD.autoScumActive;
+            if (MOD.autoScumActive) {
+                continuousCheck(MOD);
+                this.innerHTML = 'Stop Auto Scum';
+            } else {
+                clearInterval(MOD.checkInterval);
+                this.innerHTML = 'Auto Scum Lumps';
+            }
         });
 
         l('storeTitle').insertAdjacentHTML('beforeend', '<a style="font-size:14px;position:reletive;bottom:2px;right:2px;display:block;" class="smallFancyButton" id="clearSettings"></a>');
@@ -327,6 +329,13 @@ Game.registerMod("lumpScum", {//this string needs to match the ID provided in yo
                 Game.ImportSaveCode(MOD.initialGameSave);
             }
         }
+    },   
+    continuousCheck: function (MOD) {
+        MOD.checkInterval = setInterval(function() {
+            if (MOD.autoScumActive && (Game.time - Game.lumpT >= Game.lumpRipeAge)) {
+                standaloneScumLump(MOD); //TODO
+            }
+        }, 5000);
     },
     gameLoadTest: function () {
         let gameLoaded = new Promise((resolve, reject) => {
