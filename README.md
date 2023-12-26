@@ -1,3 +1,5 @@
+## NOT RELEASED YET
+
 EPILEPSY WARNING: The Steam version of this mod causes the game to constantly reload, causing the screen to alternate flashing colors. If you are sensitive to that, be wary.
 
 THE ORIGINAL MOD:
