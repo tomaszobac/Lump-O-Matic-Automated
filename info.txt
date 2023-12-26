@@ -1,11 +1,12 @@
 {
-	"Name": "Lump-O-Matic",
-	"ID": "lumpScum",
-	"Author": "Ender Onryo",
-	"Description": "A mod that allows you to automate human viable lump scumming.",
+	"Name": "Lump-O-Matic-Automated",
+	"ID": "lumpScumAuto",
+	"Author": "Ender Onryo, Panter",
+	"Description": "An automation extension of a Cookie Clicker steam mod by EnderOnryo.",
 	"ModVersion": 1,
 	"GameVersion": 2.048,
-	"Date": "04/09/2022",
+	"Date": "27/12/2023",
 	"Dependencies": [],
+	"AllowSteamAchievs": 1,
 	"Disabled": 1
 }

@@ -1,4 +1,4 @@
-Game.registerMod("lumpScum", {//this string needs to match the ID provided in your info.txt
+Game.registerMod("lumpScumAuto", {
     init: function () {
         let MOD = this;
         MOD.awaitGameLoad();
