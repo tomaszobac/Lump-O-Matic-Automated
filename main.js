@@ -21,6 +21,8 @@ Game.registerMod("lumpScum", {//this string needs to match the ID provided in yo
             scumInProgress: MOD.scumInProgress,
             scumStartTime: MOD.scumStartTime,
             scumIterations: MOD.scumIterations,
+            autoScumActive: MOD.autoScumActive,
+            checkInterval: MOD.checkInterval,
             initialGameSave: MOD.initialGameSave,
             initialLumpCount: MOD.initialLumpCount
         };
@@ -65,23 +67,24 @@ Game.registerMod("lumpScum", {//this string needs to match the ID provided in yo
 
         l('storeTitle').insertAdjacentHTML('beforeend', '<a style="font-size:14px;position:reletive;bottom:2px;right:2px;display:block;" class="smallFancyButton" id="scumActivate"></a>');
         AddEvent(l('scumActivate'), 'click', function () {
-            MOD.scumInProgress = true;
+            /* MOD.scumInProgress = true;
             MOD.scumStartTime = Date.now();
             MOD.scumIterations = 0;
             MOD.initialLumpCount = Game.lumps;
             MOD.updateButtons();
-            MOD.scumLump();
+            MOD.scumLump(); */
+            MOD.startScum();
         });
 
         l('storeTitle').insertAdjacentHTML('beforeend', '<a style="font-size:14px;position:reletive;bottom:2px;right:2px;display:block;" class="smallFancyButton" id="autoScum"></a>');
         AddEvent(l('autoScum'), 'click', function () {
             MOD.autoScumActive = !MOD.autoScumActive;
             if (MOD.autoScumActive) {
-                continuousCheck(MOD);
-                this.innerHTML = 'Stop Auto Scum';
+                MOD.updateButtons();
+                MOD.continuousCheck();
             } else {
                 clearInterval(MOD.checkInterval);
-                this.innerHTML = 'Auto Scum Lumps';
+                MOD.updateButtons();
             }
         });
 
@@ -101,6 +104,7 @@ Game.registerMod("lumpScum", {//this string needs to match the ID provided in yo
         l('iterationCutoff').innerHTML = 'Iteration Cutoff: ' + MOD.iterationCutoff;
         l('durationCutoff').innerHTML = 'Duration Cutoff: ' + MOD.durationCutoffTotalText;
         l('scumActivate').innerHTML = 'Scum Your Lump!';
+        l('autoScum').innerHTML = MOD.autoScumActive ? 'Stop Auto Scum' : 'Auto Scum Lumps'
         l('clearSettings').innerHTML = 'Clear Settings';
     },
     impossibleButtonStateChecks: function () {
@@ -300,7 +304,7 @@ Game.registerMod("lumpScum", {//this string needs to match the ID provided in yo
             MOD.scumTotalTime = MOD.scumEndTime - MOD.scumStartTime;
             MOD.initialGameSave = Game.WriteSave(1);
             Game.clickLump();
-            scumStarted = true;
+            MOD.scumStarted = true;
             if (MOD.iterationCutoff > 0 && MOD.scumIterations >= MOD.iterationCutoff) {
                 MOD.scumInProgress = false;
                 MOD.updateButtons();
@@ -330,12 +334,24 @@ Game.registerMod("lumpScum", {//this string needs to match the ID provided in yo
             }
         }
     },   
-    continuousCheck: function (MOD) {
+    continuousCheck: function () {
+        let MOD = this;
+
         MOD.checkInterval = setInterval(function() {
-            if (MOD.autoScumActive && (Game.time - Game.lumpT >= Game.lumpRipeAge)) {
-                standaloneScumLump(MOD); //TODO
+            if (MOD.autoScumActive && !MOD.scumStarted && (Game.time - Game.lumpT >= Game.lumpRipeAge)) {
+                MOD.startScum();
             }
-        }, 5000);
+        }, 300000);
+    },
+    startScum: function () {
+        let MOD = this;
+
+        MOD.scumInProgress = true;
+        MOD.scumStartTime = Date.now();
+        MOD.scumIterations = 0;
+        MOD.initialLumpCount = Game.lumps;
+        MOD.updateButtons();
+        MOD.scumLump();
     },
     gameLoadTest: function () {
         let gameLoaded = new Promise((resolve, reject) => {
@@ -377,8 +393,11 @@ Game.registerMod("lumpScum", {//this string needs to match the ID provided in yo
         MOD.scumIterations = save.scumIterations
         MOD.initialGameSave = save.initialGameSave
         MOD.initialLumpCount = save.initialLumpCount
+        // Button 6
+        MOD.autoScumActive = save.autoScumActive
+        MOD.checkInterval = save.checkInterval
         MOD.updateButtons();
-        if (MOD.scumInProgress === true && scumStarted === false) {
+        if (MOD.scumInProgress === true && MOD.scumStarted === false) {
             MOD.scumLump();
         }
     },
@@ -415,7 +434,10 @@ Game.registerMod("lumpScum", {//this string needs to match the ID provided in yo
         MOD.initialLumpCount = 0;
         MOD.PostClickLumpCount = 0;
         MOD.initialGameSave = 0;
-        scumStarted = false;
+        MOD.scumStarted = false;
+        // Button 6
+        MOD.autoScumActive = false;
+        MOD.checkInterval = null;
         // Misc.
         ortrollIcon = MOD.dir + '/ortroll.webp';
         save = 0;
