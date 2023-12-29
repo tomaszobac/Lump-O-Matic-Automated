@@ -67,12 +67,6 @@ Game.registerMod("lumpScumAuto", {
 
         l('storeTitle').insertAdjacentHTML('beforeend', '<a style="font-size:14px;position:reletive;bottom:2px;right:2px;display:block;" class="smallFancyButton" id="scumActivate"></a>');
         AddEvent(l('scumActivate'), 'click', function () {
-            /* MOD.scumInProgress = true;
-            MOD.scumStartTime = Date.now();
-            MOD.scumIterations = 0;
-            MOD.initialLumpCount = Game.lumps;
-            MOD.updateButtons();
-            MOD.scumLump(); */
             MOD.startScum();
         });
 
@@ -291,11 +285,11 @@ Game.registerMod("lumpScumAuto", {
         if (Game.time - Game.lumpT < Game.lumpMatureAge) {
             if (MOD.scumIterations === 0) {
                 MOD.scumInProgress = false;
-                Game.Notify(`Sugar Lump Not Ready.`, 'This Sugar Lump has not fully Matured yet.', [23, 14]);
+                Game.Notify(`Sugar Lump Not Ready.`, 'This Sugar Lump has not fully Matured yet.', [23, 14], 5);
             }
             else {
                 MOD.scumInProgress = false;
-                Game.Notify(`Wow, just wow.`, 'You actually managed to take so long to scum your lump that it fully ripened and auto harvested. I am in shock at this level of incompetency, congratulations.', [13, 11]);
+                Game.Notify(`Wow, just wow.`, 'You actually managed to take so long to scum your lump that it fully ripened and auto harvested. I am in shock at this level of incompetency, congratulations.', [13, 11], 5, false);
             }
         }
         else {
@@ -309,18 +303,18 @@ Game.registerMod("lumpScumAuto", {
                 MOD.scumInProgress = false;
                 MOD.updateButtons();
                 MOD.durationFinishConversion();
-                Game.Notify(`Skill Issue?`, `After ` + MOD.scumIterations + ' attempts encompassing ' + MOD.scumTotalText + ' you failed to scum your lump.', [, , ortrollIcon]);
+                Game.Notify(`Skill Issue?`, `After ` + MOD.scumIterations + ' attempts encompassing ' + MOD.scumTotalText + ' you failed to scum your lump.', [, , ortrollIcon], 5, false);
             }
             else if (MOD.durationCutoffTotalRaw > 0 && MOD.scumTotalTime > MOD.durationCutoffTotalRaw) {
                 MOD.scumInProgress = false;
                 MOD.updateButtons();
                 MOD.durationFinishConversion();
-                Game.Notify(`Skill Issue?`, `After ` + MOD.scumIterations + ' attempts encompassing ' + MOD.scumTotalText + ' you failed to scum your lump.', [, , ortrollIcon]);
+                Game.Notify(`Skill Issue?`, `After ` + MOD.scumIterations + ' attempts encompassing ' + MOD.scumTotalText + ' you failed to scum your lump.', [, , ortrollIcon], 5, false);
             }
             else if ((Game.lumpCurrentType === MOD.desiredLumpID || MOD.desiredLumpID === -1) && ((Game.lumps - MOD.initialLumpCount) === MOD.desiredLumpYield || MOD.desiredLumpYield === MOD.maxLumpYield + 1)) {
                 MOD.updateButtons();
                 MOD.durationFinishConversion();
-                Game.Notify(MOD.desiredLumpType + ' Scummed Successfully!', 'After ' + MOD.scumIterations + ' attempts encompassing ' + MOD.scumTotalText + ' you managed to scum your lump.', [10, 6]);
+                Game.Notify(MOD.desiredLumpType + ' Scummed Successfully!', 'After ' + MOD.scumIterations + ' attempts encompassing ' + MOD.scumTotalText + ' you managed to scum your lump.', [10, 6], 5, false);
                 MOD.scumInProgress = false;
                 MOD.scumStartTime = 0;
                 MOD.scumIterations = 0;
@@ -337,11 +331,13 @@ Game.registerMod("lumpScumAuto", {
     continuousCheck: function () {
         let MOD = this;
 
-        MOD.checkInterval = setInterval(function() {
-            if (MOD.autoScumActive && !MOD.scumStarted && (Game.time - Game.lumpT >= Game.lumpRipeAge)) {
-                MOD.startScum();
-            }
-        }, 300000);
+        if (MOD.autoScumActive) {
+            MOD.checkInterval = setInterval(function() {
+                if (!MOD.scumInProgress && (Game.time - Game.lumpT >= Game.lumpRipeAge)) {
+                    MOD.startScum();
+                }
+            }, 300000);
+        }
     },
     startScum: function () {
         let MOD = this;
@@ -364,7 +360,7 @@ Game.registerMod("lumpScumAuto", {
     awaitGameLoad: async function () {
         let MOD = this;
         gameLoadedTrue = await MOD.gameLoadTest('true'); // Waits for the Sugar Lump counter to be greater than -1 to ensure the game has loaded,
-        Game.Notify(`Lump-O-Matic Loaded!`, `Glucose Is In Sight!`, [22, 17]); // Creates a notification on screen to let the player know the mod is enabled.
+        Game.Notify(`Lump-O-Matic Loaded!`, `Glucose Is In Sight!`, [22, 17], 5); // Creates a notification on screen to let the player know the mod is enabled.
         setTimeout(() => { // Grants the Third-party achievment with a small time delay so it properly activates.
             Game.Win('Third-party')
         }, 100);
@@ -396,6 +392,8 @@ Game.registerMod("lumpScumAuto", {
         // Button 6
         MOD.autoScumActive = save.autoScumActive
         MOD.checkInterval = save.checkInterval
+
+        MOD.continuousCheck();
         MOD.updateButtons();
         if (MOD.scumInProgress === true && MOD.scumStarted === false) {
             MOD.scumLump();
